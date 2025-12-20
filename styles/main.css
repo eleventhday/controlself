@@ -1,0 +1,38 @@
+
+/* Custom styles */
+.tree-node {
+    margin-left: 20px;
+    border-left: 2px solid #e5e7eb;
+    padding-left: 12px;
+    position: relative;
+}
+
+.tree-node::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 14px;
+    width: 12px;
+    height: 2px;
+    background-color: #e5e7eb;
+}
+
+.status-active {
+    border-color: #3b82f6;
+}
+.status-completed {
+    border-color: #10b981;
+}
+.status-failed {
+    border-color: #ef4444;
+}
+
+/* Animations */
+@keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.animate-pulse-soft {
+    animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
