@@ -22,7 +22,7 @@
 ## 如何使用
 
 ### 在线访问
-(在此处填写您的 Netlify 或 GitHub Pages 链接)
+(https://controlself.netlify.app/)
 
 ### 本地运行
 
