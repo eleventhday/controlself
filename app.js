@@ -665,7 +665,13 @@ function initCloud() {
     const db = firebase.firestore();
     const provider = new firebase.auth.GoogleAuthProvider();
     return {
-        signIn: () => auth.signInWithPopup(provider),
+        signIn: async () => {
+            try {
+                await auth.signInWithPopup(provider);
+            } catch (e) {
+                await auth.signInWithRedirect(provider);
+            }
+        },
         signOut: () => auth.signOut(),
         onAuth: (cb) => auth.onAuthStateChanged(cb),
         isSignedIn: () => !!auth.currentUser,
@@ -698,6 +704,10 @@ function initCloud() {
     };
 }
 cloud = initCloud();
+if (cloud && cloud.isSignedIn && cloud.isSignedIn()) {
+    if (btnLogin) btnLogin.classList.add('hidden');
+    if (btnLogout) btnLogout.classList.remove('hidden');
+}
 if (btnLogin) {
     btnLogin.onclick = async () => {
         if (!cloud) return alert('未配置云同步');
