@@ -3,6 +3,8 @@ export class RSIPEngine {
     constructor() {
         this.nodes = [];
         this.rootId = 'root';
+        this.importedTrees = [];
+        this.daily = { date: null, count: 0 };
         this.load();
     }
 
@@ -13,6 +15,14 @@ export class RSIPEngine {
         } else {
             this.initDefault();
         }
+        const imp = localStorage.getItem('rsip_imported_trees');
+        if (imp) {
+            this.importedTrees = JSON.parse(imp);
+        }
+        const dailyStr = localStorage.getItem('rsip_daily');
+        if (dailyStr) {
+            this.daily = JSON.parse(dailyStr);
+        }
     }
 
     initDefault() {
@@ -20,7 +30,7 @@ export class RSIPEngine {
             id: 'root',
             title: '核心协议',
             description: '每天打开此应用并回顾这些国策。',
-            status: 'active',
+            status: 'inactive',
             parentId: null,
             children: []
         }];
@@ -29,6 +39,8 @@ export class RSIPEngine {
 
     save() {
         localStorage.setItem('rsip_nodes', JSON.stringify(this.nodes));
+        localStorage.setItem('rsip_imported_trees', JSON.stringify(this.importedTrees));
+        localStorage.setItem('rsip_daily', JSON.stringify(this.daily));
     }
 
     getNodes() {
@@ -77,11 +89,12 @@ export class RSIPEngine {
     }
 
     addNode(parentId, title, description) {
+        if (!this.canActivateToday()) throw new Error('今天已点亮或新增过节点');
         const newNode = {
             id: Date.now().toString(),
             title,
             description,
-            status: 'active',
+            status: 'inactive',
             parentId,
             children: []
         };
@@ -93,6 +106,7 @@ export class RSIPEngine {
             parent.children.push(newNode.id);
         }
         
+        this.increaseDaily();
         this.save();
         return newNode;
     }
@@ -103,6 +117,46 @@ export class RSIPEngine {
             node.status = status;
             this.save();
         }
+    }
+
+    activateNode(id) {
+        if (!this.canActivateToday()) throw new Error('今天只能点亮一个节点');
+        const node = this.nodes.find(n => n.id === id);
+        if (!node) return;
+        node.status = 'active';
+        this.increaseDaily();
+        this.save();
+    }
+
+    extinguishNode(id) {
+        const toProcess = [id];
+        while (toProcess.length) {
+            const cur = toProcess.pop();
+            const node = this.nodes.find(n => n.id === cur);
+            if (!node) continue;
+            node.status = 'inactive';
+            toProcess.push(...(node.children || []));
+        }
+        this.save();
+    }
+
+    canActivateToday() {
+        const today = new Date().toISOString().slice(0, 10);
+        if (this.daily.date !== today) {
+            this.daily.date = today;
+            this.daily.count = 0;
+            this.save();
+        }
+        return this.daily.count < 1;
+    }
+
+    increaseDaily() {
+        const today = new Date().toISOString().slice(0, 10);
+        if (this.daily.date !== today) {
+            this.daily.date = today;
+            this.daily.count = 0;
+        }
+        this.daily.count += 1;
     }
 
     deleteNode(id) {
@@ -170,5 +224,18 @@ export class RSIPEngine {
             console.error("Import failed:", e);
             throw new Error("Invalid Share Code");
         }
+    }
+
+    importAsNewTree(base64Str, name = '导入国策树') {
+        const nodes = this.importTree(base64Str, 'preview');
+        const resetNodes = nodes.map(n => ({ ...n, status: 'inactive' }));
+        const id = Date.now().toString();
+        this.importedTrees.push({ id, name, nodes: resetNodes });
+        this.save();
+        return id;
+    }
+
+    getImportedTrees() {
+        return this.importedTrees;
     }
 }

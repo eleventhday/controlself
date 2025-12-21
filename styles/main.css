@@ -1,8 +1,44 @@
 
 /* Custom styles */
+.theme-light {
+    --bg: #f8fafc;
+    --panel: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e5e7eb;
+    --primary: #4f46e5;
+    --accent: #22c55e;
+    --danger: #ef4444;
+}
+.theme-dark {
+    --bg: #0b1220;
+    --panel: #0f172a;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #1f2937;
+    --primary: #818cf8;
+    --accent: #34d399;
+    --danger: #f87171;
+}
+body.theme-light, body.theme-dark {
+    background-color: var(--bg);
+    color: var(--text);
+}
+.panel {
+    background-color: var(--panel);
+    color: var(--text);
+    border-color: var(--border);
+}
+.text-muted { color: var(--muted); }
+.border-muted { border-color: var(--border); }
+.text-primary { color: var(--primary); }
+.bg-primary { background-color: var(--primary); }
+.text-accent { color: var(--accent); }
+.text-danger { color: var(--danger); }
+
 .tree-node {
     margin-left: 20px;
-    border-left: 2px solid #e5e7eb;
+    border-left: 2px solid var(--border);
     padding-left: 12px;
     position: relative;
 }
@@ -14,17 +50,17 @@
     top: 14px;
     width: 12px;
     height: 2px;
-    background-color: #e5e7eb;
+    background-color: var(--border);
 }
 
 .status-active {
-    border-color: #3b82f6;
+    border-color: var(--primary);
 }
 .status-completed {
-    border-color: #10b981;
+    border-color: var(--accent);
 }
 .status-failed {
-    border-color: #ef4444;
+    border-color: var(--danger);
 }
 
 /* Animations */
@@ -35,4 +71,36 @@
 
 .animate-pulse-soft {
     animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.tree {
+    --line: var(--border);
+}
+.tree ul {
+    padding-left: 1rem;
+    position: relative;
+}
+.tree ul::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0.5rem;
+    width: 2px;
+    background: var(--line);
+}
+.tree li {
+    list-style: none;
+    position: relative;
+    margin: 0.5rem 0;
+    padding-left: 1rem;
+}
+.tree li::before {
+    content: '';
+    position: absolute;
+    top: 0.9rem;
+    left: 0;
+    width: 1rem;
+    height: 2px;
+    background: var(--line);
 }

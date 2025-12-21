@@ -9,6 +9,7 @@ export class CTDPEngine {
             reservationTime: null,
             duration: 60 * 60 * 1000, // 1 hour default
             reservationDuration: 15 * 60 * 1000, // 15 mins default
+            exceptions: [],
         };
         this.load();
     }
@@ -87,6 +88,17 @@ export class CTDPEngine {
         this.state.reservationTime = null;
         this.save();
         return { ...this.state, reason };
+    }
+
+    exception(reason) {
+        const entry = { time: new Date().toISOString(), reason };
+        this.state.exceptions = this.state.exceptions || [];
+        this.state.exceptions.push(entry);
+        this.state.status = 'idle';
+        this.state.startTime = null;
+        this.state.reservationTime = null;
+        this.save();
+        return this.state;
     }
 
     getState() {
