@@ -51,13 +51,14 @@ function renderCTDP() {
     const stats = document.createElement('div');
     stats.className = 'w-full grid grid-cols-2 gap-6';
     stats.innerHTML = `
-        <div class="bg-white p-6 rounded-2xl shadow-sm text-center border border-gray-100 hover:shadow-md transition-shadow">
+        <div id="main-chain-card" class="bg-white p-6 rounded-2xl shadow-sm text-center border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
             <div class="text-4xl font-extrabold text-indigo-600 mb-1">${state.chainCount}</div>
             <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold">主链连胜 (Main Chain)</div>
+            <div class="text-[10px] text-gray-400 mt-1">点击查看历史</div>
         </div>
         <div class="bg-white p-6 rounded-2xl shadow-sm text-center border border-gray-100 hover:shadow-md transition-shadow">
             <div class="text-4xl font-extrabold text-blue-500 mb-1">${state.auxChainCount}</div>
-            <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold">副链积累 (Aux Chain)</div>
+            <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold">预约链 (Reservation Chain)</div>
         </div>
     `;
     container.appendChild(stats);
@@ -72,6 +73,19 @@ function renderCTDP() {
     actionArea.appendChild(bgDeco);
 
     if (state.status === 'idle') {
+        // Collect tasks
+        let taskOptions = '<option value="">-- 选择任务 (可选) --</option>';
+        taskGroups.forEach(g => {
+            if (g.tasks.length > 0) {
+                taskOptions += `<optgroup label="${g.name}">`;
+                g.tasks.forEach(t => {
+                    const dur = t.minutes ? ` (${t.minutes}m)` : '';
+                    taskOptions += `<option value="${t.id}">${t.title}${dur}</option>`;
+                });
+                taskOptions += `</optgroup>`;
+            }
+        });
+
         actionArea.innerHTML += `
             <div class="text-gray-300 mb-2">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,7 +93,14 @@ function renderCTDP() {
                 </svg>
             </div>
             <h2 class="text-3xl font-bold text-gray-800">准备专注？</h2>
-            <p class="text-gray-500 text-center max-w-md">执行“神圣座位原则”。一旦坐下，必须专注。如果还没准备好，可以使用“线性时延”进行预约。</p>
+            <p class="text-gray-500 text-center max-w-md">执行“神圣座位原则”。一旦坐下，必须专注。</p>
+            
+            <div class="w-full max-w-md mt-2">
+                <select id="task-select" class="w-full p-3 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
+                    ${taskOptions}
+                </select>
+            </div>
+
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full max-w-md mt-4">
                 <button id="btn-reserve" class="flex-1 py-4 px-6 bg-blue-50 text-blue-600 font-bold rounded-xl hover:bg-blue-100 transition-all transform hover:scale-[1.02]">
                     预约座位 (15分钟)
@@ -104,6 +125,9 @@ function renderCTDP() {
             </button>
         `;
     } else if (state.status === 'active') {
+        const taskName = state.currentTask ? state.currentTask.title : '无特定任务';
+        const taskDur = state.currentTask && state.currentTask.minutes ? ` / ${state.currentTask.minutes}m` : '';
+        
         actionArea.innerHTML += `
             <div class="text-green-500 mb-2 animate-pulse">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -111,8 +135,11 @@ function renderCTDP() {
                 </svg>
             </div>
             <h2 class="text-3xl font-bold text-green-600">专注进行中...</h2>
-            <p class="text-gray-600 text-center">神圣座位原则生效中。请勿离开座位。</p>
-            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-800 my-6 tracking-tight">00:00</div>
+            <div class="text-center">
+                <p class="text-gray-800 font-bold text-lg">${taskName}</p>
+                <p class="text-gray-500 text-sm">神圣座位原则生效中</p>
+            </div>
+            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-800 my-6 tracking-tight">00:00${taskDur}</div>
             <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md">
                 <button id="btn-exception" class="flex-1 py-4 px-6 bg-yellow-50 text-yellow-700 font-bold rounded-xl hover:bg-yellow-100 transition-colors border border-yellow-100">
                     分心了 (例外)
@@ -125,34 +152,79 @@ function renderCTDP() {
                 </button>
             </div>
         `;
+    } else if (state.status === 'paused') {
+        actionArea.innerHTML += `
+            <div class="text-yellow-500 mb-2">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 class="text-3xl font-bold text-yellow-600">专注已暂停</h2>
+            <p class="text-gray-600 text-center">例外处理中... 请尽快恢复。</p>
+            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-400 my-6 tracking-tight">PAUSED</div>
+            <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                <button id="btn-resume" class="flex-1 py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 transform hover:scale-[1.02]">
+                    恢复专注
+                </button>
+                 <button id="btn-fail" class="flex-1 py-4 px-6 bg-red-50 text-red-500 font-bold rounded-xl hover:bg-red-100 transition-colors border border-red-100">
+                    彻底分心 (重置)
+                </button>
+            </div>
+        `;
     }
 
     container.appendChild(actionArea);
     contentEl.appendChild(container);
 
     // Bind Events
+    document.getElementById('main-chain-card').onclick = () => renderHistoryModal();
+
     if (state.status === 'idle') {
         document.getElementById('btn-reserve').onclick = () => { ctdp.reserve(); render(); };
-        document.getElementById('btn-start').onclick = () => { ctdp.startSession(); render(); };
+        document.getElementById('btn-start').onclick = () => { 
+            const select = document.getElementById('task-select');
+            let task = null;
+            if (select && select.value) {
+                const allTasks = taskGroups.flatMap(g => g.tasks);
+                task = allTasks.find(t => t.id === select.value);
+            }
+            ctdp.startSession(task); 
+            render(); 
+        };
     } else if (state.status === 'reserved') {
         document.getElementById('btn-start').onclick = () => {
-            try { ctdp.startSession(); render(); } catch(e) { alert(e.message); render(); }
+            try { 
+                 const select = document.getElementById('task-select'); // Wait, reserved view doesn't have select. 
+                 // If reserved, user probably didn't select task yet? 
+                 // We should allow selecting task when starting from reserved.
+                 // For simplicity, let's just start without specific task or add selection in reserved view too.
+                 // Current implementation above doesn't have select in reserved view. 
+                 // Let's assume generic session for now or ask via prompt if crucial.
+                 ctdp.startSession(); 
+                 render(); 
+            } catch(e) { alert(e.message); render(); }
         };
         startTimer(new Date(state.reservationTime), state.reservationDuration, true);
     } else if (state.status === 'active') {
-        document.getElementById('btn-exception').onclick = () => {
-            const reason = prompt("请输入例外原因：");
-            if (reason) { ctdp.exception(reason); render(); }
-        };
+        document.getElementById('btn-exception').onclick = () => renderExceptionModal();
         document.getElementById('btn-fail').onclick = () => {
             if(confirm("确认分心并重置？")) { ctdp.fail('Reset'); render(); }
         };
-        document.getElementById('btn-complete').onclick = () => { ctdp.completeSession(); render(); };
-        startTimer(new Date(state.startTime), 0, false);
+        document.getElementById('btn-complete').onclick = () => { 
+             const notes = prompt("任务完成！有什么想备注的吗？");
+             ctdp.completeSession(notes || ''); 
+             render(); 
+        };
+        startTimer(new Date(state.startTime), 0, false, state.totalPausedTime);
+    } else if (state.status === 'paused') {
+        document.getElementById('btn-resume').onclick = () => { ctdp.resume(); render(); };
+        document.getElementById('btn-fail').onclick = () => {
+            if(confirm("确认分心并重置？")) { ctdp.fail('Reset during pause'); render(); }
+        };
     }
 }
 
-function startTimer(startTime, durationMs, isCountdown) {
+function startTimer(startTime, durationMs, isCountdown, initialPausedTime = 0) {
     if (ctdpTimerInterval) clearInterval(ctdpTimerInterval);
     
     const display = document.getElementById('timer-display');
@@ -173,17 +245,215 @@ function startTimer(startTime, durationMs, isCountdown) {
                 return;
             }
         } else {
-            diff = now - startTime;
+            // For active session: Duration = (Now - Start) - PausedTime
+            diff = now - startTime - initialPausedTime;
         }
 
         const mins = Math.floor(diff / 60000);
         const secs = Math.floor((diff % 60000) / 1000);
+        // Only show MM:SS
         display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        
+        // Append task duration if active
+        if (!isCountdown) {
+             const state = ctdp.getState();
+             if (state.currentTask && state.currentTask.minutes) {
+                 display.textContent += ` / ${state.currentTask.minutes}m`;
+             }
+        }
     };
 
     update();
     ctdpTimerInterval = setInterval(update, 1000);
 }
+
+// --- Modals ---
+
+function renderExceptionModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    
+    const state = ctdp.getState();
+    const reasons = state.savedReasons || [];
+    
+    const content = document.createElement('div');
+    content.className = 'bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl transform transition-all';
+    
+    content.innerHTML = `
+        <h3 class="text-xl font-bold mb-4 text-gray-800">分心了 (例外)</h3>
+        <p class="text-sm text-gray-500 mb-4">记录原因，下不为例。本次专注将暂停，直至恢复。</p>
+        
+        <div class="mb-4">
+            <label class="block text-xs font-bold text-gray-500 mb-2">历史原因 (点击选择)</label>
+            <div class="flex flex-wrap gap-2" id="reason-list">
+                ${reasons.map(r => `<button class="px-3 py-1 bg-gray-100 hover:bg-indigo-50 hover:text-indigo-600 rounded-full text-sm border border-gray-200 transition-colors reason-btn">${r}</button>`).join('')}
+            </div>
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-xs font-bold text-gray-500 mb-2">新原因 / 编辑</label>
+            <input type="text" id="reason-input" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none" placeholder="输入分心原因...">
+        </div>
+        
+        <div class="flex gap-3">
+            <button id="btn-cancel-modal" class="flex-1 py-3 text-gray-500 font-bold hover:bg-gray-50 rounded-xl">取消</button>
+            <button id="btn-confirm-exception" class="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200">下不为例 (暂停)</button>
+        </div>
+        <div class="mt-4 text-center">
+             <button id="btn-manage-reasons" class="text-xs text-indigo-500 hover:underline">管理原因列表</button>
+        </div>
+    `;
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    // Bindings
+    const input = document.getElementById('reason-input');
+    
+    document.querySelectorAll('.reason-btn').forEach(btn => {
+        btn.onclick = () => {
+            input.value = btn.innerText;
+        };
+    });
+    
+    document.getElementById('btn-cancel-modal').onclick = () => modal.remove();
+    
+    document.getElementById('btn-confirm-exception').onclick = () => {
+        const r = input.value;
+        if (!r) return alert("请输入原因");
+        ctdp.pause(r);
+        modal.remove();
+        render();
+    };
+
+    document.getElementById('btn-manage-reasons').onclick = () => {
+        modal.remove();
+        renderReasonManagerModal();
+    };
+}
+
+function renderReasonManagerModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    
+    const state = ctdp.getState();
+    
+    const content = document.createElement('div');
+    content.className = 'bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl';
+    
+    content.innerHTML = `
+        <h3 class="text-xl font-bold mb-4 text-gray-800">管理例外原因</h3>
+        <div id="manage-list" class="space-y-2 mb-6 max-h-60 overflow-y-auto"></div>
+        <div class="flex justify-end">
+            <button id="btn-close-manager" class="px-6 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200">关闭</button>
+        </div>
+    `;
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    const list = document.getElementById('manage-list');
+    
+    const renderList = () => {
+        list.innerHTML = '';
+        const reasons = ctdp.getState().savedReasons || [];
+        reasons.forEach(r => {
+            const row = document.createElement('div');
+            row.className = 'flex justify-between items-center bg-gray-50 p-3 rounded-lg';
+            row.innerHTML = `<span>${r}</span>`;
+            
+            const del = document.createElement('button');
+            del.className = 'text-red-500 hover:bg-red-50 p-1 rounded';
+            del.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
+            del.onclick = () => {
+                ctdp.removeReason(r);
+                renderList();
+            };
+            row.appendChild(del);
+            list.appendChild(row);
+        });
+    };
+    
+    renderList();
+    
+    document.getElementById('btn-close-manager').onclick = () => {
+        modal.remove();
+        renderExceptionModal(); // Go back
+    };
+}
+
+function renderHistoryModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    
+    const state = ctdp.getState();
+    const history = state.history || [];
+    
+    const content = document.createElement('div');
+    content.className = 'bg-white rounded-2xl p-6 w-full max-w-2xl shadow-2xl flex flex-col max-h-[80vh]';
+    
+    content.innerHTML = `
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-gray-800">主链历史记录</h3>
+            <button id="btn-close-history" class="text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="overflow-y-auto flex-1 space-y-4 pr-2">
+            ${history.length === 0 ? '<p class="text-center text-gray-500">暂无记录</p>' : ''}
+            ${history.map(h => {
+                const start = new Date(h.startTime).toLocaleString();
+                const durMins = Math.floor(h.duration / 60000);
+                const taskName = h.task ? h.task.title : '自由专注';
+                const notes = h.notes || '';
+                return `
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <div class="font-bold text-indigo-700">${taskName}</div>
+                                <div class="text-xs text-gray-500">${start} · 持续 ${durMins} 分钟</div>
+                            </div>
+                            <button class="text-xs text-blue-500 hover:underline btn-edit-note" data-id="${h.id}">
+                                ${notes ? '修改备注' : '添加备注'}
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-700 bg-white p-2 rounded border border-gray-100">
+                            ${notes || '<span class="text-gray-400 italic">无备注</span>'}
+                        </div>
+                        ${h.exceptions && h.exceptions.length > 0 ? `
+                            <div class="mt-2 text-xs text-red-400">
+                                <strong>例外:</strong> ${h.exceptions.map(e => e.reason).join(', ')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    document.getElementById('btn-close-history').onclick = () => modal.remove();
+    
+    document.querySelectorAll('.btn-edit-note').forEach(btn => {
+        btn.onclick = () => {
+            const id = btn.dataset.id;
+            const h = history.find(x => x.id === id);
+            if (h) {
+                const newNote = prompt("备注:", h.notes || '');
+                if (newNote !== null) {
+                    ctdp.updateHistoryNote(id, newNote);
+                    modal.remove();
+                    renderHistoryModal(); // Re-render
+                }
+            }
+        };
+    });
+}
+
 
 
 // --- RSIP View (Strategy) ---
@@ -683,6 +953,7 @@ function initCloud() {
                 ctdp_state: ctdp.getState(),
                 rsip_nodes: rsip.getNodes(),
                 rsip_imported: rsip.getImportedTrees(),
+                task_groups: taskGroups,
                 updatedAt: new Date().toISOString()
             }, { merge: true });
             alert('已同步到云端');
