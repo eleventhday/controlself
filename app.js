@@ -8,7 +8,9 @@ const rsip = new RSIPEngine();
 const contentEl = document.getElementById('content');
 const navCtdp = document.getElementById('nav-ctdp');
 const navRsip = document.getElementById('nav-rsip');
-const themeSelect = document.getElementById('theme-select');
+const btnThemeToggle = document.getElementById('btn-theme-toggle');
+const btnTheory = document.getElementById('btn-theory');
+const btnTheoryMobile = document.getElementById('btn-theory-mobile');
 const btnLogin = document.getElementById('btn-login');
 const btnLogout = document.getElementById('btn-logout');
 const btnConfig = document.getElementById('btn-config');
@@ -824,28 +826,35 @@ navRsip.onclick = () => { currentView = 'rsip'; render(); };
 checkUrlImport();
 
 function applyThemeFromStorage() {
-    const pref = localStorage.getItem('theme_pref') || 'system';
-    if (themeSelect) themeSelect.value = pref;
-    if (pref === 'system') {
+    let pref = localStorage.getItem('theme_pref');
+    // If no preference, use system
+    if (!pref) {
         const mq = window.matchMedia('(prefers-color-scheme: dark)');
-        document.body.classList.remove('theme-light', 'theme-dark');
-        document.body.classList.add(mq.matches ? 'theme-dark' : 'theme-light');
-        if (mq.matches) document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
+        pref = mq.matches ? 'dark' : 'light';
+    }
+    
+    if (pref === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.body.classList.add('theme-dark');
+        document.body.classList.remove('theme-light');
     } else {
-        document.body.classList.remove('theme-light', 'theme-dark');
-        document.body.classList.add(pref === 'dark' ? 'theme-dark' : 'theme-light');
-        if (pref === 'dark') document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
+        document.documentElement.classList.remove('dark');
+        document.body.classList.add('theme-light');
+        document.body.classList.remove('theme-dark');
     }
 }
-if (themeSelect) {
-    themeSelect.onchange = () => {
-        localStorage.setItem('theme_pref', themeSelect.value);
+if (btnThemeToggle) {
+    btnThemeToggle.onclick = () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        const newPref = isDark ? 'light' : 'dark';
+        localStorage.setItem('theme_pref', newPref);
         applyThemeFromStorage();
     };
 }
 applyThemeFromStorage();
+
+if (btnTheory) btnTheory.onclick = renderTheoryModal;
+if (btnTheoryMobile) btnTheoryMobile.onclick = renderTheoryModal;
 
 // ----- Task Groups -----
 function loadTaskGroups() {
@@ -860,6 +869,73 @@ function saveTaskGroups() {
 }
 loadTaskGroups();
 
+
+function renderTheoryModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-900">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">核心原理：数学工程视角下的自控力</h3>
+                <button id="btn-close-theory" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto prose dark:prose-invert max-w-none text-sm md:text-base">
+                <p class="text-gray-600 dark:text-gray-300">
+                    本系统基于<b>“将自控力视为数学工程问题”</b>的理念构建。我们不依赖模糊的“意志力”，而是通过设计稳态系统来约束行为。
+                </p>
+                
+                <div class="my-6 bg-indigo-50 dark:bg-slate-700/50 p-4 rounded-xl border border-indigo-100 dark:border-slate-600">
+                    <h4 class="text-indigo-700 dark:text-indigo-300 font-bold mb-2">核心公式：价值积分模型</h4>
+                    <p class="font-mono text-sm md:text-base text-gray-800 dark:text-gray-200 bg-white dark:bg-slate-800 p-3 rounded border border-gray-200 dark:border-slate-600 mb-2 overflow-x-auto">
+                        I = ∫₀^∞ V(τ) · W(τ) dτ
+                    </p>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-600 dark:text-gray-400 text-sm">
+                        <li><b>V(τ) (未来价值函数)</b>：该行为在未来每一刻带来的真实价值。</li>
+                        <li><b>W(τ) (权重贴现函数)</b>：你对未来的重视程度（通常随时间衰减）。</li>
+                        <li><b>I (真实倾向)</b>：两者乘积的积分。只有当学习/工作的积分 I 大于玩乐的积分时，你才会行动。</li>
+                    </ul>
+                </div>
+
+                <h4 class="font-bold text-gray-800 dark:text-gray-100 mt-4">系统两大协议</h4>
+                
+                <div class="space-y-4 mt-2">
+                    <div>
+                        <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            CTDP (链式时延协议)
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                            <b>解决“启动困难”和“中途分心”。</b><br>
+                            通过“神圣座位”和“主链/预约链”机制，将庞大的长期价值 V(τ) 转化为当下必须维护的“连续性”价值，从而在 τ=0 时刻产生巨大的行动权重。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                            RSIP (递归稳态迭代协议)
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                            <b>解决“长远规划”和“迷茫”。</b><br>
+                            利用递归树结构拆解目标，确保每一层的“稳态”都能支持上一层的目标。
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-xs text-gray-400 text-center">
+                    参考来源：知乎 @EleventhDay (链式时延协议)
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('btn-close-theory').onclick = () => modal.remove();
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+}
 
 function renderCreateTaskModal(groupId) {
     const modal = document.createElement('div');
