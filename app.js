@@ -51,21 +51,21 @@ function renderCTDP() {
     const stats = document.createElement('div');
     stats.className = 'w-full grid grid-cols-2 gap-6';
     stats.innerHTML = `
-        <div id="main-chain-card" class="bg-white p-6 rounded-2xl shadow-sm text-center border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
-            <div class="text-4xl font-extrabold text-indigo-600 mb-1">${state.chainCount}</div>
-            <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold">主链连胜 (Main Chain)</div>
-            <div class="text-[10px] text-gray-400 mt-1">点击查看历史</div>
+        <div id="main-chain-card" class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm text-center border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer">
+            <div class="text-4xl font-extrabold text-indigo-600 dark:text-indigo-400 mb-1">${state.chainCount}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">主链连胜 (Main Chain)</div>
+            <div class="text-[10px] text-gray-400 dark:text-gray-500 mt-1">点击查看历史</div>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm text-center border border-gray-100 hover:shadow-md transition-shadow">
-            <div class="text-4xl font-extrabold text-blue-500 mb-1">${state.auxChainCount}</div>
-            <div class="text-xs text-gray-500 uppercase tracking-wider font-semibold">预约链 (Reservation Chain)</div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm text-center border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow">
+            <div class="text-4xl font-extrabold text-blue-500 dark:text-blue-400 mb-1">${state.auxChainCount}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">预约链 (Reservation Chain)</div>
         </div>
     `;
     container.appendChild(stats);
 
     // Status & Action Area
     const actionArea = document.createElement('div');
-    actionArea.className = 'w-full bg-white p-10 rounded-3xl shadow-lg flex flex-col items-center justify-center space-y-6 border border-indigo-50 min-h-[400px] relative overflow-hidden';
+    actionArea.className = 'w-full bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-lg flex flex-col items-center justify-center space-y-6 border border-indigo-50 dark:border-slate-700 min-h-[400px] relative overflow-hidden';
     
     // Background decoration
     const bgDeco = document.createElement('div');
@@ -80,39 +80,48 @@ function renderCTDP() {
                 taskOptions += `<optgroup label="${g.name}">`;
                 g.tasks.forEach(t => {
                     const dur = t.minutes ? ` (${t.minutes}m)` : '';
-                    taskOptions += `<option value="${t.id}">${t.title}${dur}</option>`;
+                    let icon = '';
+                    if (t.type === 'i_will') icon = '💪 ';
+                    else if (t.type === 'i_wont') icon = '🛑 ';
+                    else if (t.type === 'i_want') icon = '🎯 ';
+                    taskOptions += `<option value="${t.id}">${icon}${t.title}${dur}</option>`;
                 });
                 taskOptions += `</optgroup>`;
             }
         });
 
         actionArea.innerHTML += `
-            <div class="text-gray-300 mb-2">
+            <div class="text-gray-300 dark:text-slate-600 mb-2">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
             </div>
-            <h2 class="text-3xl font-bold text-gray-800">准备专注？</h2>
-            <p class="text-gray-500 text-center max-w-md">执行“神圣座位原则”。一旦坐下，必须专注。</p>
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-gray-100">准备专注？</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-center max-w-md">执行“神圣座位原则”。一旦坐下，必须专注。</p>
             
-            <div class="w-full max-w-md mt-2">
-                <select id="task-select" class="w-full p-3 border border-gray-200 rounded-xl text-gray-700 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
+            <div class="w-full max-w-md mt-2 flex gap-2">
+                <select id="task-select" class="flex-1 p-3 border border-gray-200 dark:border-slate-600 rounded-xl text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-indigo-200 outline-none transition-all">
                     ${taskOptions}
                 </select>
+                <button id="btn-quick-add-task" class="p-3 bg-indigo-50 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 dark:hover:bg-slate-600 transition-colors border border-indigo-100 dark:border-slate-600" title="快速创建任务">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                </button>
             </div>
 
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full max-w-md mt-4">
-                <button id="btn-reserve" class="flex-1 py-4 px-6 bg-blue-50 text-blue-600 font-bold rounded-xl hover:bg-blue-100 transition-all transform hover:scale-[1.02]">
+                <button id="btn-reserve" class="flex-1 py-4 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all transform hover:scale-[1.02]">
                     预约座位 (15分钟)
                 </button>
-                <button id="btn-start" class="flex-1 py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 transform hover:scale-[1.02]">
+                <button id="btn-start" class="flex-1 py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none transform hover:scale-[1.02]">
                     现在坐下 (开始)
                 </button>
             </div>
         `;
     } else if (state.status === 'reserved') {
         actionArea.innerHTML += `
-             <div class="text-blue-500 mb-2 animate-pulse">
+             <div class="text-blue-500 dark:text-blue-400 mb-2 animate-pulse">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -277,27 +286,27 @@ function renderExceptionModal() {
     const reasons = state.savedReasons || [];
     
     const content = document.createElement('div');
-    content.className = 'bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl transform transition-all';
+    content.className = 'bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl transform transition-all';
     
     content.innerHTML = `
-        <h3 class="text-xl font-bold mb-4 text-gray-800">分心了 (例外)</h3>
-        <p class="text-sm text-gray-500 mb-4">记录原因，下不为例。本次专注将暂停，直至恢复。</p>
+        <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">分心了 (例外)</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">记录原因，下必为例。本次专注将暂停，直至恢复。</p>
         
         <div class="mb-4">
-            <label class="block text-xs font-bold text-gray-500 mb-2">历史原因 (点击选择)</label>
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2">历史原因 (点击选择)</label>
             <div class="flex flex-wrap gap-2" id="reason-list">
-                ${reasons.map(r => `<button class="px-3 py-1 bg-gray-100 hover:bg-indigo-50 hover:text-indigo-600 rounded-full text-sm border border-gray-200 transition-colors reason-btn">${r}</button>`).join('')}
+                ${reasons.map(r => `<button class="px-3 py-1 bg-gray-100 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:text-gray-300 rounded-full text-sm border border-gray-200 dark:border-slate-600 transition-colors reason-btn">${r}</button>`).join('')}
             </div>
         </div>
         
         <div class="mb-6">
-            <label class="block text-xs font-bold text-gray-500 mb-2">新原因 / 编辑</label>
-            <input type="text" id="reason-input" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none" placeholder="输入分心原因...">
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2">新原因 / 编辑</label>
+            <input type="text" id="reason-input" class="w-full p-3 border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-indigo-200 outline-none" placeholder="输入分心原因...">
         </div>
         
         <div class="flex gap-3">
-            <button id="btn-cancel-modal" class="flex-1 py-3 text-gray-500 font-bold hover:bg-gray-50 rounded-xl">取消</button>
-            <button id="btn-confirm-exception" class="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200">下不为例 (暂停)</button>
+            <button id="btn-cancel-modal" class="flex-1 py-3 text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl">取消</button>
+            <button id="btn-confirm-exception" class="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200">下必为例 (暂停)</button>
         </div>
         <div class="mt-4 text-center">
              <button id="btn-manage-reasons" class="text-xs text-indigo-500 hover:underline">管理原因列表</button>
@@ -339,13 +348,13 @@ function renderReasonManagerModal() {
     const state = ctdp.getState();
     
     const content = document.createElement('div');
-    content.className = 'bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl';
+    content.className = 'bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl';
     
     content.innerHTML = `
-        <h3 class="text-xl font-bold mb-4 text-gray-800">管理例外原因</h3>
+        <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">管理例外原因</h3>
         <div id="manage-list" class="space-y-2 mb-6 max-h-60 overflow-y-auto"></div>
         <div class="flex justify-end">
-            <button id="btn-close-manager" class="px-6 py-2 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200">关闭</button>
+            <button id="btn-close-manager" class="px-6 py-2 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600">关闭</button>
         </div>
     `;
     
@@ -390,12 +399,12 @@ function renderHistoryModal() {
     const history = state.history || [];
     
     const content = document.createElement('div');
-    content.className = 'bg-white rounded-2xl p-6 w-full max-w-2xl shadow-2xl flex flex-col max-h-[80vh]';
+    content.className = 'bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-2xl shadow-2xl flex flex-col max-h-[80vh]';
     
     content.innerHTML = `
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-gray-800">主链历史记录</h3>
-            <button id="btn-close-history" class="text-gray-500 hover:text-gray-700">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">主链历史记录</h3>
+            <button id="btn-close-history" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -409,17 +418,17 @@ function renderHistoryModal() {
                 const taskName = h.task ? h.task.title : '自由专注';
                 const notes = h.notes || '';
                 return `
-                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <div class="bg-gray-50 dark:bg-slate-700 rounded-xl p-4 border border-gray-100 dark:border-slate-600">
                         <div class="flex justify-between items-start mb-2">
                             <div>
-                                <div class="font-bold text-indigo-700">${taskName}</div>
-                                <div class="text-xs text-gray-500">${start} · 持续 ${durMins} 分钟</div>
+                                <div class="font-bold text-indigo-700 dark:text-indigo-400">${taskName}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">${start} · 持续 ${durMins} 分钟</div>
                             </div>
                             <button class="text-xs text-blue-500 hover:underline btn-edit-note" data-id="${h.id}">
                                 ${notes ? '修改备注' : '添加备注'}
                             </button>
                         </div>
-                        <div class="text-sm text-gray-700 bg-white p-2 rounded border border-gray-100">
+                        <div class="text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-600 p-2 rounded border border-gray-100 dark:border-slate-500">
                             ${notes || '<span class="text-gray-400 italic">无备注</span>'}
                         </div>
                         ${h.exceptions && h.exceptions.length > 0 ? `
@@ -472,22 +481,22 @@ function renderRSIP() {
                 <p class="text-sm text-gray-500">拖拽节点可调整层级关系</p>
             </div>
             <div class="flex space-x-2">
-                 <button id="btn-share" class="flex items-center space-x-2 text-sm bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 transition-colors border border-indigo-100">
+                 <button id="btn-share" class="flex items-center space-x-2 text-sm bg-indigo-50 dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-slate-600 transition-colors border border-indigo-100 dark:border-slate-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
                     <span>分享配置</span>
                 </button>
-                 <button id="btn-import" class="flex items-center space-x-2 text-sm bg-white text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm">
+                 <button id="btn-import" class="flex items-center space-x-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors border border-gray-200 dark:border-slate-600 shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     <span>导入</span>
                 </button>
-                 <button id="btn-browse-shared" class="flex items-center space-x-2 text-sm bg-white text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm">
+                 <button id="btn-browse-shared" class="flex items-center space-x-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors border border-gray-200 dark:border-slate-600 shadow-sm">
                     <span>平台共享</span>
                  </button>
-                 <button id="btn-cloud-share" class="flex items-center space-x-2 text-sm bg-white text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm">
+                 <button id="btn-cloud-share" class="flex items-center space-x-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors border border-gray-200 dark:border-slate-600 shadow-sm">
                     <span>云端分享</span>
                  </button>
             </div>
@@ -509,15 +518,15 @@ function renderRSIP() {
     impWrap.className = 'space-y-4';
     imported.forEach(t => {
         const card = document.createElement('div');
-        card.className = 'bg-white border border-gray-200 rounded-xl p-4';
+        card.className = 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-4';
         const title = document.createElement('div');
-        title.className = 'font-bold mb-2';
+        title.className = 'font-bold mb-2 text-gray-800 dark:text-gray-100';
         title.textContent = t.name;
         card.appendChild(title);
         const actions = document.createElement('div');
         actions.className = 'flex gap-2';
         const btnView = document.createElement('button');
-        btnView.className = 'px-3 py-1 text-sm bg-indigo-50 text-indigo-700 rounded-lg border border-indigo-100';
+        btnView.className = 'px-3 py-1 text-sm bg-indigo-50 dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 rounded-lg border border-indigo-100 dark:border-slate-600';
         btnView.textContent = '查看';
         btnView.onclick = () => {
             const previewRoot = t.nodes.find(n => n.id === 'root');
@@ -536,8 +545,8 @@ function renderRSIP() {
     tg.className = 'mt-10';
     tg.innerHTML = `
         <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-bold">任务群</h3>
-            <button id="btn-add-group" class="px-3 py-1 text-sm bg-white text-gray-700 rounded-lg border border-gray-200 hover:bg-gray-50">新增任务群</button>
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">任务群</h3>
+            <button id="btn-add-group" class="px-3 py-1 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600">新增任务群</button>
         </div>
         <div id="task-groups"></div>
     `;
@@ -609,7 +618,7 @@ function handleImport(input) {
 function renderNode(node, allNodes) {
     const el = document.createElement('div');
     // Styling: card look
-    el.className = 'bg-white p-5 rounded-xl border border-gray-200 shadow-sm mb-4 relative transition-all group';
+    el.className = 'bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm mb-4 relative transition-all group';
     
     // Drag & Drop Attributes
     el.setAttribute('draggable', 'true');
@@ -656,11 +665,11 @@ function renderNode(node, allNodes) {
         }
     };
     
-    let statusColor = 'bg-gray-100 text-gray-800';
+    let statusColor = 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-200';
     let statusText = '未点亮';
-    if (node.status === 'active') { statusColor = 'bg-blue-100 text-blue-800'; statusText = '进行中'; }
-    if (node.status === 'completed') { statusColor = 'bg-green-100 text-green-800'; statusText = '已完成'; }
-    if (node.status === 'failed') { statusColor = 'bg-red-100 text-red-800'; statusText = '已失败'; }
+    if (node.status === 'active') { statusColor = 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200'; statusText = '进行中'; }
+    if (node.status === 'completed') { statusColor = 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'; statusText = '已完成'; }
+    if (node.status === 'failed') { statusColor = 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200'; statusText = '已失败'; }
 
     // Node Content
     el.innerHTML = `
@@ -668,31 +677,31 @@ function renderNode(node, allNodes) {
             <div class="flex-1">
                 <div class="flex items-center space-x-3 mb-1">
                     <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${statusColor}">${statusText}</span>
-                    <h3 class="font-bold text-gray-800 text-lg">${node.title}</h3>
+                    <h3 class="font-bold text-gray-800 dark:text-gray-100 text-lg">${node.title}</h3>
                 </div>
-                <p class="text-sm text-gray-500 leading-relaxed">${node.description}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">${node.description}</p>
             </div>
             
             <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 ${node.id !== 'root' ? `
-                    <button class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 btn-delete" title="删除">
+                    <button class="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 btn-delete" title="删除">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
                     </button>
                 ` : ''}
-                <button class="p-2 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 btn-add-child" title="添加子国策">
+                <button class="p-2 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 btn-add-child" title="添加子国策">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
                     </svg>
                 </button>
                 ${node.status !== 'active' ? `
-                <button class="p-2 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 btn-activate" title="点亮">
+                <button class="p-2 text-gray-400 hover:text-green-600 dark:hover:text-green-400 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/30 btn-activate" title="点亮">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M11 3a1 1 0 100-2H9a1 1 0 100 2h2zm-1 15a7 7 0 100-14 7 7 0 000 14z" />
                     </svg>
                 </button>` : `
-                <button class="p-2 text-gray-400 hover:text-yellow-600 rounded-lg hover:bg-yellow-50 btn-extinguish" title="熄灭">
+                <button class="p-2 text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-400 rounded-lg hover:bg-yellow-50 dark:hover:bg-yellow-900/30 btn-extinguish" title="熄灭">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M6 2a1 1 0 000 2h8a1 1 0 100-2H6zM4 6h12v2H4V6zm2 4h8v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-6z" />
                     </svg>
@@ -795,9 +804,13 @@ function applyThemeFromStorage() {
         const mq = window.matchMedia('(prefers-color-scheme: dark)');
         document.body.classList.remove('theme-light', 'theme-dark');
         document.body.classList.add(mq.matches ? 'theme-dark' : 'theme-light');
+        if (mq.matches) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
     } else {
         document.body.classList.remove('theme-light', 'theme-dark');
         document.body.classList.add(pref === 'dark' ? 'theme-dark' : 'theme-light');
+        if (pref === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
     }
 }
 if (themeSelect) {
@@ -821,57 +834,159 @@ function saveTaskGroups() {
 }
 loadTaskGroups();
 
+
+function renderCreateTaskModal(groupId) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    
+    const content = document.createElement('div');
+    content.className = 'bg-white dark:bg-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl transform transition-all';
+    
+    content.innerHTML = `
+        <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">创建新任务</h3>
+        
+        <div class="mb-4">
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2">任务名称</label>
+            <input type="text" id="task-title" class="w-full p-3 border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-indigo-200 outline-none" placeholder="例如：完成报告">
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2">任务描述</label>
+            <input type="text" id="task-content" class="w-full p-3 border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-indigo-200 outline-none" placeholder="具体要做什么...">
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2">预计时长 (分钟)</label>
+            <input type="number" id="task-minutes" class="w-full p-3 border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-indigo-200 outline-none" placeholder="留空为无限">
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2">类型 (自控力)</label>
+            <div class="grid grid-cols-3 gap-2">
+                <button type="button" class="type-btn p-3 border rounded-xl text-center text-sm font-bold transition-all hover:bg-indigo-50 dark:hover:bg-slate-600" data-type="i_will">
+                    <div class="text-xl mb-1">💪</div>
+                    我要做
+                </button>
+                <button type="button" class="type-btn p-3 border rounded-xl text-center text-sm font-bold transition-all hover:bg-indigo-50 dark:hover:bg-slate-600" data-type="i_wont">
+                    <div class="text-xl mb-1">🛑</div>
+                    我不要
+                </button>
+                <button type="button" class="type-btn p-3 border rounded-xl text-center text-sm font-bold transition-all hover:bg-indigo-50 dark:hover:bg-slate-600" data-type="i_want">
+                    <div class="text-xl mb-1">🎯</div>
+                    我想要
+                </button>
+            </div>
+            <input type="hidden" id="task-type" value="i_will">
+        </div>
+        
+        <div class="flex gap-3">
+            <button id="btn-cancel-task" class="flex-1 py-3 text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-slate-700 rounded-xl">取消</button>
+            <button id="btn-create-task" class="flex-1 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200">创建</button>
+        </div>
+    `;
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+    
+    // Type Selection Logic
+    const typeBtns = content.querySelectorAll('.type-btn');
+    const typeInput = document.getElementById('task-type');
+    
+    const updateTypeUI = (selectedType) => {
+        typeBtns.forEach(btn => {
+            const t = btn.dataset.type;
+            if (t === selectedType) {
+                btn.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700', 'dark:bg-slate-600', 'dark:text-indigo-300', 'dark:border-indigo-400');
+                btn.classList.remove('border-gray-200', 'dark:border-slate-600', 'text-gray-600', 'dark:text-gray-300');
+            } else {
+                btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700', 'dark:bg-slate-600', 'dark:text-indigo-300', 'dark:border-indigo-400');
+                btn.classList.add('border-gray-200', 'dark:border-slate-600', 'text-gray-600', 'dark:text-gray-300');
+            }
+        });
+        typeInput.value = selectedType;
+    };
+    
+    // Default selection
+    updateTypeUI('i_will');
+    
+    typeBtns.forEach(btn => {
+        btn.onclick = () => updateTypeUI(btn.dataset.type);
+    });
+    
+    document.getElementById('btn-cancel-task').onclick = () => modal.remove();
+    
+    document.getElementById('btn-create-task').onclick = () => {
+        const title = document.getElementById('task-title').value;
+        if (!title) return alert("请输入任务名称");
+        
+        const contentVal = document.getElementById('task-content').value;
+        const minutesStr = document.getElementById('task-minutes').value;
+        const minutes = minutesStr ? parseInt(minutesStr, 10) : null;
+        const type = typeInput.value;
+        
+        const group = taskGroups.find(g => g.id === groupId);
+        if (group) {
+            group.tasks.push({
+                id: Date.now().toString(),
+                title,
+                content: contentVal,
+                minutes,
+                type,
+                status: 'idle'
+            });
+            saveTaskGroups();
+            renderTaskGroups();
+        }
+        
+        modal.remove();
+    };
+}
+
 function renderTaskGroups() {
     const wrap = document.getElementById('task-groups');
     if (!wrap) return;
     wrap.innerHTML = '';
     taskGroups.forEach(group => {
         const card = document.createElement('div');
-        card.className = 'bg-white border border-gray-200 rounded-xl p-4 mb-4';
+        card.className = 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-4 mb-4';
         const header = document.createElement('div');
         header.className = 'flex justify-between items-center mb-2';
         const title = document.createElement('div');
-        title.className = 'font-bold';
+        title.className = 'font-bold text-gray-800 dark:text-gray-100';
         title.textContent = group.name;
         header.appendChild(title);
         const hBtns = document.createElement('div');
         hBtns.className = 'flex gap-2';
         const rename = document.createElement('button');
-        rename.className = 'px-2 py-1 text-xs bg-white border border-gray-200 rounded';
+        rename.className = 'px-2 py-1 text-xs bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded text-gray-700 dark:text-gray-200';
         rename.textContent = '重命名';
         rename.onclick = () => {
             const n = prompt('新的名称：', group.name);
             if (n) { group.name = n; saveTaskGroups(); renderTaskGroups(); }
         };
         const addTask = document.createElement('button');
-        addTask.className = 'px-2 py-1 text-xs bg-white border border-gray-200 rounded';
+        addTask.className = 'px-2 py-1 text-xs bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded text-gray-700 dark:text-gray-200';
         addTask.textContent = '添加任务';
         addTask.onclick = () => {
-            const title = prompt('任务名称：');
-            if (!title) return;
-            const content = prompt('任务内容：') || '';
-            const dur = prompt('时长(分钟)，留空为无限：');
-            const m = dur ? parseInt(dur, 10) : null;
-            group.tasks.push({ id: Date.now().toString(), title, content, minutes: isNaN(m) ? null : m, status: 'idle' });
-            saveTaskGroups(); renderTaskGroups();
+            renderCreateTaskModal(group.id);
         };
         const examples = document.createElement('button');
-        examples.className = 'px-2 py-1 text-xs bg-indigo-50 border border-indigo-100 rounded text-indigo-700';
+        examples.className = 'px-2 py-1 text-xs bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-800 rounded text-indigo-700 dark:text-indigo-300';
         examples.textContent = '添加范例';
         examples.onclick = () => {
             const presets = [
-                { title: '番茄钟', content: '专注一个番茄钟', minutes: 25 },
-                { title: '深度工作', content: '无干扰深度工作', minutes: 90 },
-                { title: '阅读', content: '阅读非虚构书籍', minutes: 30 },
-                { title: '散步冥想', content: '户外散步冥想', minutes: 20 },
-                { title: '自由练习', content: '无限时长的自由练习', minutes: null }
+                { title: '番茄钟', content: '专注一个番茄钟', minutes: 25, type: 'i_will' },
+                { title: '深度工作', content: '无干扰深度工作', minutes: 90, type: 'i_will' },
+                { title: '阅读', content: '阅读非虚构书籍', minutes: 30, type: 'i_want' },
+                { title: '戒烟/戒手机', content: '忍住冲动', minutes: 15, type: 'i_wont' },
+                { title: '自由练习', content: '无限时长的自由练习', minutes: null, type: 'i_will' }
             ];
             const menu = presets.map((p, i) => `${i+1}. ${p.title}(${p.minutes ?? '∞'}分钟)`).join('\n');
             const pick = prompt(`选择范例编号：\n${menu}`);
             const idx = parseInt(pick, 10) - 1;
             const item = presets[idx];
             if (item) {
-                group.tasks.push({ id: Date.now().toString(), title: item.title, content: item.content, minutes: item.minutes, status: 'idle' });
+                group.tasks.push({ id: Date.now().toString(), title: item.title, content: item.content, minutes: item.minutes, type: item.type || 'i_will', status: 'idle' });
                 saveTaskGroups(); renderTaskGroups();
             }
         };
@@ -884,16 +999,23 @@ function renderTaskGroups() {
         list.className = 'space-y-2';
         group.tasks.forEach(task => {
             const row = document.createElement('div');
-            row.className = 'flex items-center justify-between bg-gray-50 rounded p-2';
+            row.className = 'flex items-center justify-between bg-gray-50 dark:bg-slate-700 rounded p-2';
+            
+            let icon = '💪';
+            if (task.type === 'i_wont') icon = '🛑';
+            if (task.type === 'i_want') icon = '🎯';
+
             const info = document.createElement('div');
-            info.innerHTML = `<div class="font-medium">${task.title}</div><div class="text-xs text-gray-500">${task.content} · 时长：${task.minutes ?? '无限'} 分钟</div>`;
+            info.innerHTML = `<div class="font-medium text-gray-800 dark:text-gray-100">${icon} ${task.title}</div><div class="text-xs text-gray-500 dark:text-gray-400">${task.content} · 时长：${task.minutes ?? '无限'} 分钟</div>`;
             row.appendChild(info);
             const btns = document.createElement('div');
             btns.className = 'flex gap-2';
             const edit = document.createElement('button');
-            edit.className = 'px-2 py-1 text-xs bg-white border border-gray-200 rounded';
+            edit.className = 'px-2 py-1 text-xs bg-white dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded text-gray-700 dark:text-gray-200';
             edit.textContent = '编辑';
             edit.onclick = () => {
+                // Simplified edit for now, or could use modal too. Keeping prompt for speed unless requested.
+                // User asked to "Pre-create tasks".
                 const t = prompt('名称：', task.title) || task.title;
                 const c = prompt('内容：', task.content) || task.content;
                 const d = prompt('时长(分钟)，留空为无限：', task.minutes ?? '') || '';
@@ -901,7 +1023,7 @@ function renderTaskGroups() {
                 saveTaskGroups(); renderTaskGroups();
             };
             const del = document.createElement('button');
-            del.className = 'px-2 py-1 text-xs bg-white border border-gray-200 rounded';
+            del.className = 'px-2 py-1 text-xs bg-white dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded text-gray-700 dark:text-gray-200';
             del.textContent = '删除';
             del.onclick = () => {
                 group.tasks = group.tasks.filter(x => x.id !== task.id);
