@@ -743,7 +743,7 @@ function renderPreview(tree, container, modal) {
 
     // Bind Import
     document.getElementById('btn-import-tree').onclick = () => {
-        if(confirm(\`确认导入 "\${tree.name}" 吗？它将作为一个新的国策树保存。\ `)) {
+        if(confirm(`确认导入 "${tree.name}" 吗？它将作为一个新的国策树保存。`)) {
             // Convert mock tree nodes to a clean import format (base64 simulation)
             // Or just directly use importAsNewTree logic if we have the object
             // RSIPEngine expects base64 string for importAsNewTree, but we can bypass or encode it.
