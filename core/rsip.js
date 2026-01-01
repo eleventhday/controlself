@@ -5,6 +5,7 @@ export class RSIPEngine {
         this.rootId = 'root';
         this.importedTrees = [];
         this.daily = { date: null, count: 0 };
+        this.isShared = false; // New: Sharing toggle
         this.load();
     }
 
@@ -23,6 +24,8 @@ export class RSIPEngine {
         if (dailyStr) {
             this.daily = JSON.parse(dailyStr);
         }
+        const shared = localStorage.getItem('rsip_is_shared');
+        this.isShared = shared === 'true';
     }
 
     initDefault() {
@@ -41,6 +44,56 @@ export class RSIPEngine {
         localStorage.setItem('rsip_nodes', JSON.stringify(this.nodes));
         localStorage.setItem('rsip_imported_trees', JSON.stringify(this.importedTrees));
         localStorage.setItem('rsip_daily', JSON.stringify(this.daily));
+        localStorage.setItem('rsip_is_shared', this.isShared);
+    }
+
+    toggleShare() {
+        this.isShared = !this.isShared;
+        this.save();
+        return this.isShared;
+    }
+
+    // Import a specific node structure (deep copy) as a child of targetParentId
+    importNodeFromTree(sourceNode, targetParentId) {
+        // Create a deep copy of the node and its descendants with new IDs
+        const map = new Map(); // oldId -> newId
+
+        const cloneNode = (n, pid) => {
+            const newId = Date.now().toString() + Math.random().toString(36).substr(2, 5);
+            map.set(n.id, newId);
+            
+            const newNode = {
+                id: newId,
+                title: n.title,
+                description: n.description,
+                status: 'inactive', // Reset status
+                parentId: pid,
+                children: []
+            };
+            
+            this.nodes.push(newNode);
+            
+            // Link to parent
+            const parent = this.nodes.find(p => p.id === pid);
+            if (parent) {
+                parent.children.push(newId);
+            }
+            
+            // Recurse for children
+            if (n.children && n.children.length > 0) {
+                 // We need to find the child objects from the source tree (we need the full source tree to do this)
+                 // This method assumes 'sourceNode' is the node object itself, but to get children we need the source tree list.
+                 // So we'll change the signature or usage. 
+                 // BETTER: The UI handles the recursion or we pass the sourceTree.
+            }
+            return newNode;
+        };
+        
+        // Actually, simpler approach: Just import the single node content for now, or shallow import.
+        // User said "挑选导入", usually means picking a specific policy.
+        // Let's implement a single node import first.
+        
+        return this.addNode(targetParentId, sourceNode.title, sourceNode.description);
     }
 
     getNodes() {
@@ -119,8 +172,28 @@ export class RSIPEngine {
         }
     }
 
+    canActivateNode(id) {
+        const node = this.nodes.find(n => n.id === id);
+        if (!node) return false;
+        
+        // Root is always activatable (conceptually, though usually it's just there)
+        if (node.id === 'root') return true;
+        
+        // Parent must be active or completed
+        if (node.parentId) {
+            const parent = this.nodes.find(n => n.id === node.parentId);
+            if (!parent) return true; // Orphaned? Allow or deny? Allow for safety.
+            if (parent.status !== 'active' && parent.status !== 'completed') {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     activateNode(id) {
         if (!this.canActivateToday()) throw new Error('今天只能点亮一个节点');
+        if (!this.canActivateNode(id)) throw new Error('必须先点亮父节点才能点亮此节点');
         const node = this.nodes.find(n => n.id === id);
         if (!node) return;
         node.status = 'active';

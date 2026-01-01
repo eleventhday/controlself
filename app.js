@@ -113,7 +113,7 @@ function renderCTDP() {
             </div>
 
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full max-w-md mt-4">
-                <button id="btn-reserve" class="flex-1 py-4 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all transform hover:scale-[1.02]">
+                <button id="btn-reserve" class="flex-1 py-4 px-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-all transform hover:scale-[1.02] border border-blue-100 dark:border-blue-900">
                     预约座位 (15分钟)
                 </button>
                 <button id="btn-start" class="flex-1 py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none transform hover:scale-[1.02]">
@@ -128,10 +128,10 @@ function renderCTDP() {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <h2 class="text-3xl font-bold text-blue-600">座位已预约</h2>
-            <p class="text-gray-600 text-center">请在倒计时结束前回到座位并开始专注。</p>
-            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-800 my-6 tracking-tight">15:00</div>
-            <button id="btn-start" class="w-full max-w-md py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 transform hover:scale-[1.02]">
+            <h2 class="text-3xl font-bold text-blue-600 dark:text-blue-400">座位已预约</h2>
+            <p class="text-gray-600 dark:text-gray-300 text-center">请在倒计时结束前回到座位并开始专注。</p>
+            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-800 dark:text-gray-100 my-6 tracking-tight">15:00</div>
+            <button id="btn-start" class="w-full max-w-md py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none transform hover:scale-[1.02]">
                 我已就座，开始专注
             </button>
         `;
@@ -140,44 +140,44 @@ function renderCTDP() {
         const taskDur = state.currentTask && state.currentTask.minutes ? ` / ${state.currentTask.minutes}m` : '';
         
         actionArea.innerHTML += `
-            <div class="text-green-500 mb-2 animate-pulse">
+            <div class="text-green-500 dark:text-green-400 mb-2 animate-pulse">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <h2 class="text-3xl font-bold text-green-600">专注进行中...</h2>
+            <h2 class="text-3xl font-bold text-green-600 dark:text-green-400">专注进行中...</h2>
             <div class="text-center">
-                <p class="text-gray-800 font-bold text-lg">${taskName}</p>
-                <p class="text-gray-500 text-sm">神圣座位原则生效中</p>
+                <p class="text-gray-800 dark:text-gray-100 font-bold text-lg">${taskName}</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">神圣座位原则生效中</p>
             </div>
-            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-800 my-6 tracking-tight">00:00${taskDur}</div>
+            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-800 dark:text-gray-100 my-6 tracking-tight">00:00${taskDur}</div>
             <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                <button id="btn-exception" class="flex-1 py-4 px-6 bg-yellow-50 text-yellow-700 font-bold rounded-xl hover:bg-yellow-100 transition-colors border border-yellow-100">
+                <button id="btn-exception" class="flex-1 py-4 px-6 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 font-bold rounded-xl hover:bg-yellow-100 dark:hover:bg-yellow-900/50 transition-colors border border-yellow-100 dark:border-yellow-900">
                     分心了 (例外)
                 </button>
-                <button id="btn-fail" class="flex-1 py-4 px-6 bg-red-50 text-red-500 font-bold rounded-xl hover:bg-red-100 transition-colors border border-red-100">
+                <button id="btn-fail" class="flex-1 py-4 px-6 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 font-bold rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors border border-red-100 dark:border-red-900">
                     分心了 (重置)
                 </button>
-                <button id="btn-complete" class="flex-1 py-4 px-6 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all shadow-lg shadow-green-200 transform hover:scale-[1.02]">
+                <button id="btn-complete" class="flex-1 py-4 px-6 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all shadow-lg shadow-green-200 dark:shadow-none transform hover:scale-[1.02]">
                     完成任务
                 </button>
             </div>
         `;
     } else if (state.status === 'paused') {
         actionArea.innerHTML += `
-            <div class="text-yellow-500 mb-2">
+            <div class="text-yellow-500 dark:text-yellow-400 mb-2">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <h2 class="text-3xl font-bold text-yellow-600">专注已暂停</h2>
-            <p class="text-gray-600 text-center">例外处理中... 请尽快恢复。</p>
-            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-400 my-6 tracking-tight">PAUSED</div>
+            <h2 class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">专注已暂停</h2>
+            <p class="text-gray-600 dark:text-gray-300 text-center">例外处理中... 请尽快恢复。</p>
+            <div id="timer-display" class="text-6xl font-mono font-bold text-gray-400 dark:text-gray-500 my-6 tracking-tight">PAUSED</div>
             <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                <button id="btn-resume" class="flex-1 py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 transform hover:scale-[1.02]">
+                <button id="btn-resume" class="flex-1 py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none transform hover:scale-[1.02]">
                     恢复专注
                 </button>
-                 <button id="btn-fail" class="flex-1 py-4 px-6 bg-red-50 text-red-500 font-bold rounded-xl hover:bg-red-100 transition-colors border border-red-100">
+                 <button id="btn-fail" class="flex-1 py-4 px-6 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 font-bold rounded-xl hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors border border-red-100 dark:border-red-900">
                     彻底分心 (重置)
                 </button>
             </div>
@@ -515,27 +515,25 @@ function renderRSIP() {
     container.innerHTML = `
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-gray-800">国策树 (National Focus Tree)</h2>
-                <p class="text-sm text-gray-500">拖拽节点可调整层级关系</p>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">国策树 (National Focus Tree)</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">拖拽节点可调整层级关系</p>
             </div>
-            <div class="flex space-x-2">
-                 <button id="btn-share" class="flex items-center space-x-2 text-sm bg-indigo-50 dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-slate-600 transition-colors border border-indigo-100 dark:border-slate-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                    <span>分享配置</span>
-                </button>
-                 <button id="btn-import" class="flex items-center space-x-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors border border-gray-200 dark:border-slate-600 shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    <span>导入</span>
-                </button>
-                 <button id="btn-browse-shared" class="flex items-center space-x-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors border border-gray-200 dark:border-slate-600 shadow-sm">
-                    <span>平台共享</span>
+            <div class="flex flex-wrap gap-2">
+                 <!-- Sharing Toggle -->
+                 <button id="btn-toggle-share" class="flex items-center space-x-2 text-sm px-4 py-2 rounded-lg font-bold transition-all border ${rsip.isShared ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' : 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-slate-600'}">
+                    <div class="w-3 h-3 rounded-full ${rsip.isShared ? 'bg-green-500' : 'bg-gray-400'}"></div>
+                    <span>${rsip.isShared ? '共享已开启' : '共享已关闭'}</span>
                  </button>
-                 <button id="btn-cloud-share" class="flex items-center space-x-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors border border-gray-200 dark:border-slate-600 shadow-sm">
-                    <span>云端分享</span>
+
+                 <button id="btn-browse-community" class="flex items-center space-x-2 text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 dark:shadow-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span>共识殿堂 (社区)</span>
+                 </button>
+                 
+                 <button id="btn-import-code" class="flex items-center space-x-2 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-bold hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors border border-gray-200 dark:border-slate-600 shadow-sm">
+                    <span>代码导入</span>
                  </button>
             </div>
         </div>
@@ -584,48 +582,184 @@ function renderRSIP() {
     contentEl.appendChild(container);
 
     // Bind Share Events
-    document.getElementById('btn-share').onclick = () => {
-        const code = rsip.exportTree();
-        if (code) {
-            const url = `${window.location.origin}${window.location.pathname}?import=${code}`;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('分享链接已复制到剪贴板！');
-            }).catch(() => {
-                prompt("复制此分享链接:", url);
-            });
-        }
+    document.getElementById('btn-toggle-share').onclick = () => {
+        rsip.toggleShare();
+        render(); // Re-render to update button state
     };
 
-    document.getElementById('btn-import').onclick = () => {
+    document.getElementById('btn-browse-community').onclick = () => {
+        renderCommunityModal();
+    };
+
+    document.getElementById('btn-import-code').onclick = () => {
         const code = prompt("粘贴分享链接或代码:");
         if (code) {
             handleImport(code);
         }
     };
-    const browseBtn = document.getElementById('btn-browse-shared');
-    if (browseBtn) {
-        browseBtn.onclick = async () => {
-            if (!cloud) return alert('尚未配置云同步');
-            const list = await cloud.listSharedTrees();
-            const names = list.map(x => `${x.id}: ${x.name}`).join('\n');
-            const pick = prompt(`输入要导入的ID:\n${names}`);
-            const item = list.find(x => x.id === pick);
-            if (item) {
-                rsip.importAsNewTree(item.code, item.name || '共享国策树');
-                alert('已导入为新树（未点亮）');
-                render();
-            }
-        };
+}
+
+const mockCommunityTrees = [
+    {
+        id: 'c1',
+        author: '知乎大神',
+        name: '考研上岸协议',
+        description: '基于自控力原理设计的考研冲刺国策树，包含早起、背单词、刷题等核心节点。',
+        likes: 1240,
+        nodes: [
+            { id: 'root', title: '考研上岸', description: '金榜题名时', status: 'inactive', parentId: null, children: ['c1_1', 'c1_2'] },
+            { id: 'c1_1', title: '早起打卡', description: '每天6:30前起床', status: 'inactive', parentId: 'root', children: [] },
+            { id: 'c1_2', title: '专注时长达标', description: '每日有效专注8小时', status: 'inactive', parentId: 'root', children: ['c1_2_1'] },
+            { id: 'c1_2_1', title: '数学真题', description: '完成一套试卷', status: 'inactive', parentId: 'c1_2', children: [] }
+        ]
+    },
+    {
+        id: 'c2',
+        author: '健身狂人',
+        name: '斯巴达勇士计划',
+        description: '30天塑形计划，严格控制饮食与训练。',
+        likes: 856,
+        nodes: [
+            { id: 'root', title: '斯巴达之躯', description: '以此为誓', status: 'inactive', parentId: null, children: ['c2_1'] },
+            { id: 'c2_1', title: '零糖摄入', description: '拒绝一切添加糖', status: 'inactive', parentId: 'root', children: ['c2_1_1'] },
+            { id: 'c2_1_1', title: '有氧30分钟', description: '晨跑或夜跑', status: 'inactive', parentId: 'c2_1', children: [] }
+        ]
     }
-    const cloudShareBtn = document.getElementById('btn-cloud-share');
-    if (cloudShareBtn) {
-        cloudShareBtn.onclick = async () => {
-            if (!cloud) return alert('未配置云同步或未登录');
-            const name = prompt('为共享的国策树命名：', '共享国策树');
-            const id = await cloud.shareTree(name || '共享国策树');
-            alert(`已分享到云端，ID: ${id}`);
+];
+
+function renderCommunityModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-900">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">共识殿堂 (社区共享)</h3>
+                <button id="btn-close-community" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-1 overflow-hidden">
+                <!-- List Side -->
+                <div class="w-1/3 border-r border-gray-100 dark:border-slate-700 overflow-y-auto bg-gray-50 dark:bg-slate-800/50">
+                    <div class="p-4 space-y-3" id="community-list">
+                        <!-- Items -->
+                    </div>
+                </div>
+                <!-- Preview Side -->
+                <div class="w-2/3 p-6 overflow-y-auto bg-white dark:bg-slate-800 relative">
+                    <div id="community-preview" class="h-full flex flex-col">
+                        <div class="flex-1 flex items-center justify-center text-gray-400">
+                            <p>请选择左侧的国策树进行预览</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    document.getElementById('btn-close-community').onclick = () => modal.remove();
+    modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+
+    const listEl = document.getElementById('community-list');
+    const previewEl = document.getElementById('community-preview');
+
+    mockCommunityTrees.forEach(tree => {
+        const item = document.createElement('div');
+        item.className = 'p-4 bg-white dark:bg-slate-700 rounded-xl border border-gray-200 dark:border-slate-600 cursor-pointer hover:border-indigo-500 dark:hover:border-indigo-400 transition-all shadow-sm';
+        item.innerHTML = `
+            <h4 class="font-bold text-gray-800 dark:text-gray-100 text-sm">${tree.name}</h4>
+            <div class="flex justify-between items-center mt-2">
+                <span class="text-xs text-indigo-500 dark:text-indigo-400 font-medium">@${tree.author}</span>
+                <span class="text-xs text-gray-400">♥ ${tree.likes}</span>
+            </div>
+        `;
+        item.onclick = () => {
+            // Highlight
+            listEl.querySelectorAll('div').forEach(d => d.classList.remove('ring-2', 'ring-indigo-500'));
+            item.classList.add('ring-2', 'ring-indigo-500');
+            
+            // Render Preview
+            renderPreview(tree, previewEl, modal);
         };
-    }
+        listEl.appendChild(item);
+    });
+}
+
+function renderPreview(tree, container, modal) {
+    container.innerHTML = `
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">${tree.name}</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">${tree.description}</p>
+            <div class="flex gap-3">
+                <button id="btn-import-tree" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-md">
+                    导入整棵树
+                </button>
+                <button class="px-4 py-2 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 font-bold rounded-lg cursor-not-allowed opacity-50" title="暂未开放">
+                    挑选节点 (开发中)
+                </button>
+            </div>
+        </div>
+        <div class="border-t border-gray-100 dark:border-slate-700 pt-6">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">结构预览</h3>
+            <div id="tree-preview-content" class="pl-4 border-l-2 border-gray-100 dark:border-slate-700"></div>
+        </div>
+    `;
+
+    // Render Tree Structure (Read-only)
+    const treeContainer = container.querySelector('#tree-preview-content');
+    
+    // Helper to render nodes recursively
+    const renderNodePreview = (nodeId) => {
+        const node = tree.nodes.find(n => n.id === nodeId);
+        if (!node) return document.createElement('div');
+
+        const el = document.createElement('div');
+        el.className = 'mb-4 relative';
+        el.innerHTML = `
+            <div class="flex items-start">
+                <div class="w-3 h-3 rounded-full bg-gray-300 dark:bg-slate-600 mt-1.5 mr-3"></div>
+                <div>
+                    <h5 class="font-bold text-gray-700 dark:text-gray-200 text-sm">${node.title}</h5>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">${node.description}</p>
+                </div>
+            </div>
+        `;
+
+        if (node.children && node.children.length > 0) {
+            const childrenContainer = document.createElement('div');
+            childrenContainer.className = 'ml-2 pl-4 border-l border-gray-200 dark:border-slate-700 mt-2';
+            node.children.forEach(childId => {
+                childrenContainer.appendChild(renderNodePreview(childId));
+            });
+            el.appendChild(childrenContainer);
+        }
+        return el;
+    };
+
+    treeContainer.appendChild(renderNodePreview('root'));
+
+    // Bind Import
+    document.getElementById('btn-import-tree').onclick = () => {
+        if(confirm(\`确认导入 "\${tree.name}" 吗？它将作为一个新的国策树保存。\ `)) {
+            // Convert mock tree nodes to a clean import format (base64 simulation)
+            // Or just directly use importAsNewTree logic if we have the object
+            // RSIPEngine expects base64 string for importAsNewTree, but we can bypass or encode it.
+            // Let's manually add it to importedTrees since we have the object directly.
+            // But we should use rsip methods to be consistent.
+            
+            // We'll construct a JSON string and encode it to simulate "Cloud Import"
+            const json = JSON.stringify(tree.nodes);
+            const base64 = btoa(unescape(encodeURIComponent(json)));
+            
+            rsip.importAsNewTree(base64, tree.name);
+            modal.remove();
+            alert("导入成功！请在左侧侧边栏查看导入的国策树。");
+            render();
+        }
+    };
 }
 
 function handleImport(input) {
@@ -774,15 +908,24 @@ function renderNode(node, allNodes) {
         
         const activateBtn = el.querySelector('.btn-activate');
         if (activateBtn) {
-            activateBtn.onclick = (e) => {
-                e.stopPropagation();
-                try {
-                    rsip.activateNode(node.id);
-                    render();
-                } catch (err) {
-                    alert(err.message);
-                }
-            };
+            if (rsip.canActivateNode(node.id)) {
+                activateBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    try {
+                        rsip.activateNode(node.id);
+                        render();
+                    } catch (err) {
+                        alert(err.message);
+                    }
+                };
+            } else {
+                activateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                activateBtn.title = "必须先点亮父节点";
+                activateBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    alert("必须先点亮父节点！");
+                };
+            }
         }
         const extinguishBtn = el.querySelector('.btn-extinguish');
         if (extinguishBtn) {
@@ -828,25 +971,72 @@ checkUrlImport();
 function applyThemeFromStorage() {
     let pref = localStorage.getItem('theme_pref');
     // If no preference, use system
-    if (!pref) {
-        const mq = window.matchMedia('(prefers-color-scheme: dark)');
-        pref = mq.matches ? 'dark' : 'light';
-    }
+    if (!pref) pref = 'system';
     
+    const html = document.documentElement;
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    const iconSystem = document.getElementById('icon-system');
+
+    // Reset icons
+    if (iconSun) iconSun.classList.add('hidden');
+    if (iconMoon) iconMoon.classList.add('hidden');
+    if (iconSystem) iconSystem.classList.add('hidden');
+
+    let isDark = false;
+
     if (pref === 'dark') {
-        document.documentElement.classList.add('dark');
+        isDark = true;
+        if (iconMoon) iconMoon.classList.remove('hidden');
+    } else if (pref === 'light') {
+        isDark = false;
+        if (iconSun) iconSun.classList.remove('hidden');
+    } else {
+        // System
+        const mq = window.matchMedia('(prefers-color-scheme: dark)');
+        isDark = mq.matches;
+        if (iconSystem) iconSystem.classList.remove('hidden');
+        
+        // Ensure listener is only added once or handled properly
+        // For simplicity in this static app, we just re-check on reload or toggle.
+        // But for real-time system change support:
+        mq.onchange = (e) => {
+            if (localStorage.getItem('theme_pref') === 'system') {
+                if (e.matches) {
+                    html.classList.add('dark');
+                    document.body.classList.add('theme-dark');
+                    document.body.classList.remove('theme-light');
+                } else {
+                    html.classList.remove('dark');
+                    document.body.classList.add('theme-light');
+                    document.body.classList.remove('theme-dark');
+                }
+            }
+        };
+    }
+
+    if (isDark) {
+        html.classList.add('dark');
         document.body.classList.add('theme-dark');
         document.body.classList.remove('theme-light');
     } else {
-        document.documentElement.classList.remove('dark');
+        html.classList.remove('dark');
         document.body.classList.add('theme-light');
         document.body.classList.remove('theme-dark');
     }
 }
+
 if (btnThemeToggle) {
     btnThemeToggle.onclick = () => {
-        const isDark = document.documentElement.classList.contains('dark');
-        const newPref = isDark ? 'light' : 'dark';
+        const currentPref = localStorage.getItem('theme_pref') || 'system';
+        let newPref;
+        if (currentPref === 'light') {
+            newPref = 'dark';
+        } else if (currentPref === 'dark') {
+            newPref = 'system';
+        } else {
+            newPref = 'light';
+        }
         localStorage.setItem('theme_pref', newPref);
         applyThemeFromStorage();
     };
@@ -927,7 +1117,7 @@ function renderTheoryModal() {
                 </div>
                 
                 <div class="mt-6 text-xs text-gray-400 text-center">
-                    参考来源：知乎 @EleventhDay (链式时延协议)
+                    参考来源：知乎 @edmond (链式时延协议)
                 </div>
             </div>
         </div>
