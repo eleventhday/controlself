@@ -862,7 +862,7 @@ function renderCreateTaskModal(groupId) {
         
         <div class="mb-6">
             <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2">类型 (自控力)</label>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-3 gap-2 mb-3">
                 <button type="button" class="type-btn p-3 border rounded-xl text-center text-sm font-bold transition-all hover:bg-indigo-50 dark:hover:bg-slate-600" data-type="i_will">
                     <div class="text-xl mb-1">💪</div>
                     我要做
@@ -875,6 +875,9 @@ function renderCreateTaskModal(groupId) {
                     <div class="text-xl mb-1">🎯</div>
                     我想要
                 </button>
+            </div>
+            <div id="type-description" class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-700 p-3 rounded-lg border border-gray-100 dark:border-slate-600 italic">
+                即使感到焦虑或疲惫，也能坚持去做这件困难的事。
             </div>
             <input type="hidden" id="task-type" value="i_will">
         </div>
@@ -891,6 +894,13 @@ function renderCreateTaskModal(groupId) {
     // Type Selection Logic
     const typeBtns = content.querySelectorAll('.type-btn');
     const typeInput = document.getElementById('task-type');
+    const typeDesc = document.getElementById('type-description');
+
+    const descriptions = {
+        'i_will': '“我要做”力量：即使感到焦虑或疲惫，也能坚持去做这件困难的事。',
+        'i_wont': '“我不要”力量：面对诱惑或冲动（如刷手机、吃零食）时说“不”。',
+        'i_want': '“我想要”力量：牢记真正重要的长远目标，以此对抗眼前的分心。'
+    };
     
     const updateTypeUI = (selectedType) => {
         typeBtns.forEach(btn => {
@@ -904,6 +914,7 @@ function renderCreateTaskModal(groupId) {
             }
         });
         typeInput.value = selectedType;
+        if (typeDesc) typeDesc.textContent = descriptions[selectedType];
     };
     
     // Default selection
