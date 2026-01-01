@@ -45,11 +45,11 @@ function render() {
 function renderCTDP() {
     const state = ctdp.getState();
     const container = document.createElement('div');
-    container.className = 'flex flex-col items-center space-y-8 max-w-2xl mx-auto';
+    container.className = 'flex flex-col items-center space-y-6 w-full max-w-2xl mx-auto px-4 md:px-0';
 
     // Header Stats
     const stats = document.createElement('div');
-    stats.className = 'w-full grid grid-cols-2 gap-6';
+    stats.className = 'w-full grid grid-cols-2 gap-4 md:gap-6';
     stats.innerHTML = `
         <div id="main-chain-card" class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm text-center border border-gray-100 dark:border-slate-700 hover:shadow-md transition-shadow cursor-pointer">
             <div class="text-4xl font-extrabold text-indigo-600 dark:text-indigo-400 mb-1">${state.chainCount}</div>
@@ -65,7 +65,7 @@ function renderCTDP() {
 
     // Status & Action Area
     const actionArea = document.createElement('div');
-    actionArea.className = 'w-full bg-white dark:bg-slate-800 p-10 rounded-3xl shadow-lg flex flex-col items-center justify-center space-y-6 border border-indigo-50 dark:border-slate-700 min-h-[400px] relative overflow-hidden';
+    actionArea.className = 'w-full bg-white dark:bg-slate-800 p-6 md:p-10 rounded-3xl shadow-lg flex flex-col items-center justify-center space-y-6 border border-indigo-50 dark:border-slate-700 min-h-[350px] md:min-h-[400px] relative overflow-hidden';
     
     // Background decoration
     const bgDeco = document.createElement('div');
@@ -183,12 +183,48 @@ function renderCTDP() {
     }
 
     container.appendChild(actionArea);
+
+    // Task Groups Section
+    const taskSection = document.createElement('div');
+    taskSection.className = 'w-full max-w-2xl mt-8 pb-20';
+    taskSection.innerHTML = `
+        <div class="flex items-center justify-between mb-4 px-2">
+            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">任务群管理</h3>
+            <button id="btn-add-group" class="px-4 py-2 text-sm font-bold bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-xl border border-indigo-100 dark:border-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-700 shadow-sm transition-all">
+                + 新增任务群
+            </button>
+        </div>
+        <div id="task-groups" class="space-y-4"></div>
+    `;
+    container.appendChild(taskSection);
+
     contentEl.appendChild(container);
+
+    renderTaskGroups();
 
     // Bind Events
     document.getElementById('main-chain-card').onclick = () => renderHistoryModal();
 
     if (state.status === 'idle') {
+        const btnQuick = document.getElementById('btn-quick-add-task');
+        if(btnQuick) {
+            btnQuick.onclick = () => {
+                if (taskGroups.length === 0) {
+                     if(confirm("还没有任务群，是否创建一个？")) {
+                         const name = prompt('任务群名称：', '我的任务群');
+                         if (name) {
+                             const newGroup = { id: Date.now().toString(), name, tasks: [] };
+                             taskGroups.push(newGroup);
+                             saveTaskGroups();
+                             renderTaskGroups();
+                             renderCreateTaskModal(newGroup.id);
+                         }
+                     }
+                } else {
+                    renderCreateTaskModal(taskGroups[0].id);
+                }
+            };
+        }
         document.getElementById('btn-reserve').onclick = () => { ctdp.reserve(); render(); };
         document.getElementById('btn-start').onclick = () => { 
             const select = document.getElementById('task-select');
@@ -541,17 +577,7 @@ function renderRSIP() {
     });
     container.appendChild(impWrap);
 
-    const tg = document.createElement('div');
-    tg.className = 'mt-10';
-    tg.innerHTML = `
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">任务群</h3>
-            <button id="btn-add-group" class="px-3 py-1 text-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600">新增任务群</button>
-        </div>
-        <div id="task-groups"></div>
-    `;
-    container.appendChild(tg);
-    renderTaskGroups();
+
 
     contentEl.appendChild(container);
 
@@ -862,7 +888,7 @@ function renderCreateTaskModal(groupId) {
         
         <div class="mb-6">
             <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-2">类型 (自控力)</label>
-            <div class="grid grid-cols-3 gap-2 mb-3">
+            <div class="grid grid-cols-3 gap-2">
                 <button type="button" class="type-btn p-3 border rounded-xl text-center text-sm font-bold transition-all hover:bg-indigo-50 dark:hover:bg-slate-600" data-type="i_will">
                     <div class="text-xl mb-1">💪</div>
                     我要做
@@ -875,9 +901,6 @@ function renderCreateTaskModal(groupId) {
                     <div class="text-xl mb-1">🎯</div>
                     我想要
                 </button>
-            </div>
-            <div id="type-description" class="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-700 p-3 rounded-lg border border-gray-100 dark:border-slate-600 italic">
-                即使感到焦虑或疲惫，也能坚持去做这件困难的事。
             </div>
             <input type="hidden" id="task-type" value="i_will">
         </div>
@@ -894,13 +917,6 @@ function renderCreateTaskModal(groupId) {
     // Type Selection Logic
     const typeBtns = content.querySelectorAll('.type-btn');
     const typeInput = document.getElementById('task-type');
-    const typeDesc = document.getElementById('type-description');
-
-    const descriptions = {
-        'i_will': '“我要做”力量：即使感到焦虑或疲惫，也能坚持去做这件困难的事。',
-        'i_wont': '“我不要”力量：面对诱惑或冲动（如刷手机、吃零食）时说“不”。',
-        'i_want': '“我想要”力量：牢记真正重要的长远目标，以此对抗眼前的分心。'
-    };
     
     const updateTypeUI = (selectedType) => {
         typeBtns.forEach(btn => {
@@ -914,7 +930,6 @@ function renderCreateTaskModal(groupId) {
             }
         });
         typeInput.value = selectedType;
-        if (typeDesc) typeDesc.textContent = descriptions[selectedType];
     };
     
     // Default selection
@@ -961,13 +976,13 @@ function renderTaskGroups() {
         const card = document.createElement('div');
         card.className = 'bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-4 mb-4';
         const header = document.createElement('div');
-        header.className = 'flex justify-between items-center mb-2';
+        header.className = 'flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3';
         const title = document.createElement('div');
-        title.className = 'font-bold text-gray-800 dark:text-gray-100';
+        title.className = 'font-bold text-gray-800 dark:text-gray-100 text-lg';
         title.textContent = group.name;
         header.appendChild(title);
         const hBtns = document.createElement('div');
-        hBtns.className = 'flex gap-2';
+        hBtns.className = 'flex gap-2 flex-wrap';
         const rename = document.createElement('button');
         rename.className = 'px-2 py-1 text-xs bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded text-gray-700 dark:text-gray-200';
         rename.textContent = '重命名';
